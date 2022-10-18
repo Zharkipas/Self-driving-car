@@ -1,10 +1,16 @@
 from flask import Flask
+import socketio
+import eventlet
 
-app = Flask(__name__) #'_main_'
+sio = socketio.Server()
 
-@app.route('/home')
-def greeting():
-    return 'Welcome'
+app = Flask(__name__)
+
+@sio.on('connect') #messgae, disconnect
+def connect(sid, environ):
+    print('connected')
 
 if __name__ == '_main_':
-    app.run(port=3000)
+    app = socketio.Middleware(sio, app)
+    eventlet.wsgi.server(eventlet.listen(('', 45676)), app)
+
